@@ -23,12 +23,13 @@ time_span = 1;
 
 % Visualize a few sample trajectories by plotting a phase portrait (θ vs ẋ)
 figure;
-hold on;
+% hold on;
 for i = 1:5 % Plot up to 5 trajectories
+    hold on;
     % Extract theta and theta_dot for the current trajectory
     index = num_points*(i-1)+2*i;
-    theta = data(index:num_points,1);
-    theta_dot = data(index:num_points,2);
+    theta = data(index:index+num_points,1);
+    theta_dot = data(index:index+num_points,2);
     
     % Plot phase portrait (theta vs theta_dot)
     plot(theta, theta_dot);

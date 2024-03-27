@@ -40,12 +40,17 @@ time_span = 1;
 % Visualize a few sample trajectories by plotting a phase portrait (θ vs ẋ)
 figure;
 hold on;
-for i = 1:num_trajectories % Plot up to 5 trajectories
+data_new = [];
+index = 1;
+theta = data(index:num_points,1);
+theta_dot = data(index:num_points,2);
+plot(theta, theta_dot);
+for i = 2:5 % Plot up to 5 trajectories
+    hold on;
+    index = num_points*(i-1)+1;
     % Extract theta and theta_dot for the current trajectory
-    index = num_points*(i-1)+2*i;
-    theta = data(index:num_points,1);
-    theta_dot = data(index:num_points,2);
-    
+    theta = data(index:index+num_points-1,1);
+    theta_dot = data(index:index+num_points-1,2);
     % Plot phase portrait (theta vs theta_dot)
     plot(theta, theta_dot);
 end
@@ -68,9 +73,18 @@ hold off;
 
 %%%%%%%%%%%%% Generate time-shfited snapshots %%%%%%%%%%%%%%%%%%%%
 % complete code to obtain snapshots X1 and X2 from dataset X
-X1 = data(1:end-1,:);
-X2 = data(2:end,:);
-
+data_new = [data(1:11,1);data(1:11,2)];
+for ii = 2:num_trajectories % Plot up to 5 trajectories
+    index_1 = num_points*(ii-1)+1;
+    % Extract theta and theta_dot for the current trajectory
+    theta = data(index_1:index_1+num_points-1,1);
+    theta_dot = data(index_1:index_1+num_points-1,2);
+    data_new = [data_new,[theta;theta_dot]];
+  
+end
+% STEP 0: data split
+X1 = data_new(:,1:end-1);
+X2 = data_new(:,2:end);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -99,7 +113,7 @@ if(EDMD_flag)
     %%%%%%%%%% Obtain Koopman operator using EDMD %%%%%%%%%%%%
         
     % complete code for function get_EDMD()
-    [A, C] = get_EDMD(X1, X2, basis);   
+    [A, C] = get_EDMD(X1,X2, basis);   
     operator.A = A;
     operator.C = C;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -109,7 +123,7 @@ else
     basis = [];
 
     % complete code for function get_DMD()
-    A = get_DMD(X1, X2);
+    A = get_DMD(X1,X2);
     operator.A = A;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -135,7 +149,7 @@ X_eval = load('prediction\pendulum_validation.csv');
 
 %%%%%%%%%%%%% Get predictions using Koopman  %%%%%%%%%%%%%%%%%%%%
 % complete code for function eval_prediction()
-X_pred = eval_prediction(X_eval,operaotr,basis,prediction);
+X_pred = eval_prediction(X_eval,operator,basis,prediction);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
