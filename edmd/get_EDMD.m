@@ -7,3 +7,18 @@ function EDMD = get_EDMD(X1, X2, basis)
 % Outputs
 % A             : n x N lifted Koopman operator
 % C             : matrix to map lifted states z to original states x
+
+psi = get_basis(X1,basis);
+% Compute the Koopman operator using least squares
+A = psi\Y;
+
+% Compute eigenvalues and eigenvectors of the Koopman operator
+[V, D] = eig(A);
+
+% Sort eigenvalues in descending order
+[eigenvalues_sorted, idx] = sort(diag(D), 'descend');
+V_sorted = V(:, idx);
+
+% Extract eigenvalues and eigenvectors corresponding to stable modes
+Lambda = diag(eigenvalues_sorted);
+psi = psi * V_sorted;

@@ -1,27 +1,27 @@
-function DMD = get_DMD(X1,X2)
+function A_tilde = get_DMD(X1,X2)
 % Load your data matrix X (each column represents a snapshot of the system)
 
 u0 = X1(:, 1);
 % Assuming X is already loaded with appropriate data
 dt = 0.1;
 % Perform Dynamic Mode Decomposition (DMD)
-[U, S, V] = svd(X1, 'econ');
+[U, E, V] = svd(X1, 'econ');
 
 r = 10;
 U_r = U(:, 1:r);
-S_r = S(1:r, 1:r);
+E_r = E(1:r, 1:r);
 V_r = V(:, 1:r);
 
 % STEP 2: low-rank subspace matrix
 %         (similarity transform, least-square fit matrix, low-rank subspace matrix)
-A_tilde = U_r' * X2 * V_r / S_r;
+A_tilde = U_r' * X2 * V_r / E_r;
 
 % Compute the DMD modes
 [eigenvectors, D] = eig(A_tilde);
 lambda = diag(D);       % eigen value
 omega = log(lambda)/dt; % log of eigen value
 
-Phi = X2 * V_r * S_r^(-1) * eigenvectors;
+Phi = X2 * V_r * E_r^(-1) * eigenvectors;
 
 % STEP 5: reconstruct the signal
 b = pinv(Phi)*u0;  % pseudo-inverse initial conditions

@@ -22,18 +22,63 @@ EDMD_flag = false;
 
 
 %% Load training trajectory data using full domain
-X = load("training\duffing_training_X.csv");
+data = load("training/duffing_training.csv");
 
 %%%%%%%%%%%%% Visualize the training dataset %%%%%%%%%%%%%%%%%%%%
 % complete code to plot phase portraits of training data
+% Number of trajectories in the dataset
+num_trajectories = 100;
 
+% Sampling rate
+sampling_rate = 0.1;
+
+% Number of data points in each trajectory
+num_points = 10;
+
+% Time span for each trajectory
+time_span = 1;
+
+% Visualize a few sample trajectories by plotting a phase portrait (θ vs ẋ)
+figure;
+hold on;
+data_new = [];
+index = 1;
+theta = data(index:num_points+1,1);
+theta_dot = data(index:num_points+1,2);
+plot(theta, theta_dot);
+data_new = [theta; theta_dot];
+for i = 2:num_trajectories % Plot up to 5 trajectories
+    hold on;
+    index = num_points*(i-1)+i;
+    % Extract theta and theta_dot for the current trajectory
+    theta = data(index:index+num_points,1);
+    theta_dot = data(index:index+num_points,2);
+    % Plot phase portrait (theta vs theta_dot)
+    plot(theta, theta_dot);
+    data_new = [data_new,[theta;theta_dot]];
+end
+
+% Set labels and title
+xlabel('\theta');
+ylabel('\theta-dot');
+title('Phase Portrait of Duffing Training Data');
+
+% Add legend
+legend('Trajectory 1', 'Trajectory 2', 'Trajectory 3', 'Trajectory 4', 'Trajectory 5');
+
+% Display grid
+grid on;
+
+hold off;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %%%%%%%%%%%%% Generate time-shfited snapshots %%%%%%%%%%%%%%%%%%%%
 % complete code to obtain snapshots X1 and X2 from dataset X
-
+% STEP 0: data split
+X1 = data_new(:,1:end-1);
+X2 = data_new(:,2:end);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

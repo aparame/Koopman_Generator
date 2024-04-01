@@ -20,13 +20,11 @@ if(strcmp(basis.type,'monomials'))
 
 elseif(strcmp(basis.type,'rbf'))
     gamma = basis.gamma;
-    
+    num_centers = 10;
     % random sampling
-    dom = [-2,2];
-    c1 = dom(1) + (dom(1)-dom(2))*rand(100,1);
-    c2 = dom(1) + (dom(1)-dom(2))*rand(100,1);
-    centers = [c1(:),c2(:)];
-    
+    [~, centers] = kmeans(X', num_centers);
+    centers = centers';
+    % size(centers)
     % unifom sampling
 %     grid_x= -2:0.2:2;
 %     [c1,c2] = meshgrid(grid_x);

@@ -98,14 +98,14 @@ if(EDMD_flag)
     % complete code
     % specify basis type as a string below ('monomials or rbf')
 
-    % basis.type = ?? 
+    basis.type = 'rbf';
     switch basis.type
     case 'monomials'
         % specifiy degree of monomial sbelow
-        % basis.deg = ??;
+        basis.deg = 5;
     case 'rbf'
         % specifiy kernel width of rbfs
-        % basis.gamma = 0.5;
+        basis.gamma = 0.5;
     otherwise
         disp('Please specify type of basis')
     end
@@ -120,20 +120,30 @@ if(EDMD_flag)
 
 else
     %%%%%%%%%% Obtain Koopman operator using DMD %%%%%%%%%%%%
-    basis = [];
 
     % complete code for function get_DMD()
     A = get_DMD(X1,X2);
     operator.A = A;
-
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end
 
 %% Plot eigenvalues of Koopman operator
 %%%%%%%%% Plot eigenvlaues of A in a unit circle %%%%%%%%%%%%%%%%
 % complete code to plot discrete time eigenvalues of A
-
-
+D = eig(A);
+% Plot the eigenvalues in the complex plane (unit circle)
+figure;
+hold on;
+plot(real(D), imag(D), 'bo'); % Plot eigenvalues as blue circles
+theta = linspace(0, 2*pi, 100);
+plot(cos(theta), sin(theta), 'r--'); % Plot unit circle in red dashed line
+xlabel('Real Part');
+ylabel('Imaginary Part');
+title('Eigenvalues of Koopman Operator (DMD)');
+legend('Eigenvalues', 'Unit Circle');
+axis equal;
+grid on;
+hold off;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% evaluate operator for n timesteps prediction
@@ -144,12 +154,64 @@ prediction.dt = 0.1;
 prediction.show_plot = true;
 
 % load the validation dataset
-X_eval = load('prediction\pendulum_validation.csv');
+X_eval = load('prediction/pendulum_validation.csv');
+%%%%%%%%%%%%% Visualize the training dataset %%%%%%%%%%%%%%%%%%%%
+% complete code to plot phase portraits of training data
+% Load the training dataset from 'pendulum_training.csv'
 
+
+% Number of data points in each trajectory
+prediction.num_points = size(X_eval, 1)/prediction.n_traj;
+
+% Visualize a few sample trajectories by plotting a phase portrait (θ vs ẋ)
+figure;
+hold on;
+
+index = 1;
+theta_eval = X_eval(index:prediction.num_points,1);
+theta_dot_eval = X_eval(index:prediction.num_points,2);
+plot(theta_eval, theta_dot_eval);
+
+for i = 2:prediction.n_traj % Plot up to 5 trajectories
+    hold on;
+    index = prediction.num_points *(i-1)+1;
+    % Extract theta and theta_dot for the current trajectory
+    theta_eval = X_eval(index:index+prediction.num_points -1,1);
+    theta_dot_eval = X_eval(index:index+prediction.num_points -1,2);
+    % Plot phase portrait (theta vs theta_dot)
+    plot(theta_eval, theta_dot_eval);
+end
+
+% Set labels and title
+xlabel('\theta_{Eval}');
+ylabel('\theta-dot_{Eval}');
+title('Phase Portrait of Pendulum Prediction Data');
+
+% Add legend
+legend('Trajectory 1', 'Trajectory 2', 'Trajectory 3', 'Trajectory 4', 'Trajectory 5', ...
+    'Trajectory 6', 'Trajectory 7', 'Trajectory 8', 'Trajectory 9');
+
+% Display grid
+grid on;
+
+hold off;
+
+% Generate evaluation data
+data_eval_new = zeros(size(X1, 1), prediction.n_traj  * 10);
+data_eval_new(1:11,1) = X_eval(1:11,1); 
+data_eval_new(12:22,1) = X_eval(1:11,2); 
+
+for i = 2:82
+     data_eval_new(1:11,i) = X_eval(((i-1)*10 + (i-1)):((i-1)*10 + (i+9)),1); 
+     data_eval_new(12:22,i) = X_eval(((i-1)*10 + (i-1)):((i-1)*10 + (i+9)),2); 
+end
 
 %%%%%%%%%%%%% Get predictions using Koopman  %%%%%%%%%%%%%%%%%%%%
 % complete code for function eval_prediction()
-X_pred = eval_prediction(X_eval,operator,basis,prediction);
+
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+X_pred = eval_prediction(data_new_eval,X2,X1,operator,prediction);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
