@@ -19,8 +19,8 @@ if(strcmp(basis.type,'monomials'))
     psi = monomial_basis(X,deg,dim,remove_lin);
 
 elseif(strcmp(basis.type,'rbf'))
-    gamma = basis.gamma;
-    num_centers = 10;
+    num_centers = basis.gamma;
+    % num_centers = 100;
     % random sampling
     [~, centers] = kmeans(X', num_centers);
     centers = centers';

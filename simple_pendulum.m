@@ -14,7 +14,7 @@ dynamics_fn = @dynamics_pendulum; % point to pendulum dynamics
 % operator approximation method
 % set to EDMD_flag = false for DMD.
 % set to EDMD_flag = true for EDMD.
-EDMD_flag = false; 
+EDMD_flag = true; 
 
 %% Load training dataset and visualize
 % load the csv file for pendulum training
@@ -105,7 +105,7 @@ if(EDMD_flag)
         basis.deg = 5;
     case 'rbf'
         % specifiy kernel width of rbfs
-        basis.gamma = 0.5;
+        basis.gamma = 100;
     otherwise
         disp('Please specify type of basis')
     end
@@ -113,9 +113,11 @@ if(EDMD_flag)
     %%%%%%%%%% Obtain Koopman operator using EDMD %%%%%%%%%%%%
         
     % complete code for function get_EDMD()
-    [A, C] = get_EDMD(X1,X2, basis);   
+    [A, C, D_sorted] = get_EDMD(X1,X2, basis);   
     operator.A = A;
     operator.C = C;
+    D = D_sorted(abs(D_sorted) < 1);
+    D = D(D~=0);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 else
@@ -124,13 +126,14 @@ else
     % complete code for function get_DMD()
     A = get_DMD(X1,X2);
     operator.A = A;
+    D = eig(A);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end
 
 %% Plot eigenvalues of Koopman operator
 %%%%%%%%% Plot eigenvlaues of A in a unit circle %%%%%%%%%%%%%%%%
 % complete code to plot discrete time eigenvalues of A
-D = eig(A);
+
 % Plot the eigenvalues in the complex plane (unit circle)
 figure;
 hold on;
