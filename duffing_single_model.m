@@ -153,7 +153,7 @@ prediction.dt = 0.1;
 prediction.show_plot = true;
 
 % load the validation dataset
-X_eval = load('prediction\duffing_validation.csv');
+X_eval = load('prediction/duffing_validation.csv');
 % Number of data points in each trajectory
 prediction.num_points = size(X_eval, 1)/prediction.n_traj;
 
