@@ -99,7 +99,7 @@ grid on;
 %%%%%%%%%%%%% obtain linear dynamics around eqb point %%%%%%%%%%%
 % complete code to obtain linearization of the system
 
-% A0 = ??
+A0 = J_eq;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
