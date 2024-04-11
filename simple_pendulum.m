@@ -157,7 +157,7 @@ prediction.n_traj = 9; %traj for evaluations
 prediction.n_steps = 20; % num timesteps to predict
 prediction.dt = 0.1;
 prediction.show_plot = true;
-
+prediction.n = 3;
 % load the validation dataset
 X_eval = load('prediction/pendulum_validation.csv');
 %%%%%%%%%%%%% Visualize the training dataset %%%%%%%%%%%%%%%%%%%%

@@ -21,7 +21,7 @@ dynamics_fn = @lorenz_system; % point to lorenz dynamics
 dt = 0.01;
 x0 = [0; 1; 20];
 xf = [0;0;0];
-u = @(t) 0;
+u = @(t) 1;
 tspan = 0:dt:50;  % Adjusted to start from 0
 options = odeset('RelTol',1e-12,'AbsTol',1e-12*ones(1,3));
 [t, data] = ode45(@(t,x) lorenz_system(t, x, u(t)), tspan, x0, options);  % Removed unnecessary input u
@@ -43,7 +43,7 @@ hold off;
 % complete code to plot phase portraits of training data
 n_traj = 100;
 x0 = randi(20,3*n_traj,1);
-u = @(t) sin(t);
+% u = @(t) sin(t);
 tspan = 0:dt:10;  % Adjusted to start from 0
 options = odeset('RelTol',1e-12,'AbsTol',1e-12*ones(1,3));
 data_table = [];
@@ -67,7 +67,7 @@ X2 = data_table(:,2:end);
 
 
 %% get Koopman operator
-EDMD_flag = false;
+EDMD_flag = true;
 if(EDMD_flag)
     % get Koopman operator using EDMD
     % define basis setup
@@ -141,11 +141,11 @@ hold off;
 prediction.n_steps = 20; % num timesteps to predict
 prediction.dt = 0.1;
 prediction.show_plot = true;
-
+prediction.n = 3;
 
 n_eval = 20;
 x0_eval = randi(20,3*n_eval,1);
-u = @(t) sin(t);
+% u = @(t) sin(t);
 tspan = 0:dt:10;  % Adjusted to start from 0
 options = odeset('RelTol',1e-12,'AbsTol',1e-12*ones(1,3));
 X_eval = [];
@@ -159,7 +159,7 @@ end
 X_pred = eval_prediction(data_table,operator,prediction);
 
 %% evaluate the avg rmse and % error across for prediction
-X_true = X_eval(1:prediction.n_steps,:);
+X_true = data_table(:,1:prediction.n_steps);
 RMSE = rmse(X_pred, X_true, prediction);
 
 

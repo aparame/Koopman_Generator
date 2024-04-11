@@ -5,7 +5,8 @@ n_steps = prediction.n_steps;
 n = prediction.n;
 dt = prediction.dt;
 time_steps = 0:dt:(n_steps-1)*dt;
-
+X_pred = X_pred';
+X_true = X_true';
 %% get rmse for each trajectory 
 x_err = []; x_err_pcent = [];
 for j=1:n_traj
