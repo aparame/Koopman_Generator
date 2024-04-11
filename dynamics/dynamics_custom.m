@@ -1,18 +1,19 @@
-function dxdt = dynamics_custom(t,x)
-% generic function to represent system dynamics
-% Inputs
-% x     : system state
-% t     : system time
-% Outputs
-% dxdt  : nonlinear dynmaics in state space form
+function dxdt = lorenz_system(x, t)
+% lorenz_system: Computes the derivative of the Lorenz system
+% Inputs:
+%   x: State vector [x, y, z]
+%   t: Time (not used in the Lorenz system, included for compatibility)
+% Output:
+%   dxdt: Derivative of the state vector
 
-%%%%%%%%%%%%% nonlinear dynamics function %%%%%%%%%%%%%%%%%%%%
-% complete code for represeting nonlinear dynamics in state space
-% dxdt = ??;
+% Lorenz system parameters
+sigma = 10;
+rho = 28;
+beta = 8/3;
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    
+% Compute derivatives
+dxdt = zeros(3, 1);
+dxdt(1) = sigma * (x(2) - x(1));
+dxdt(2) = x(1) * (rho - x(3)) - x(2);
+dxdt(3) = x(1) * x(2) - beta * x(3);
 end

@@ -118,6 +118,7 @@ if(EDMD_flag)
     operator.C = C;
     D = D_sorted(abs(D_sorted) < 1);
     D = D(D~=0);
+    operator.D = D;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 else
@@ -127,6 +128,7 @@ else
     A = get_DMD(X1,X2);
     operator.A = A;
     D = eig(A);
+    operator.D = D;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end
 

@@ -1,4 +1,4 @@
-function X_pred = eval_prediction(X_eval,X2,X1,operator,prediction)
+function X_pred = eval_prediction(X_eval,operator,prediction)
 % function to obtain trajectories predicted using Koopman operator
 % Inputs
 % X             : Validation dataset
@@ -8,30 +8,23 @@ function X_pred = eval_prediction(X_eval,X2,X1,operator,prediction)
 % Outputs
 % X_pred        : Dataset of trajectories predicted using Koopman
 
-r = rank(operator.A);
-[~, S, V] = svd(X1, 'econ');
-Vr = V(:, 1:r);
 
-Sr = S(1:r, 1:r);
-[V_dmd, D] = eig(operator.A);
-Phi = X2 * Vr / Sr * V_dmd;
-size(Phi)
-% Project evaluation data onto DMD modes
-X_eval_projected = Phi' .* X_eval;
+% Project evaluation data onto DMD modes (Higher space)
+b = operator.Phi\ X_eval(:,1);
+size(b)
 
 % Evolve modal coefficients forward in time using DMD eigenvalues
-omega = log(diag(D)) / prediction.dt;
+omega = log(diag(operator.D)) / prediction.dt;
 t = linspace(0,prediction.n_steps * prediction.dt,prediction.n_steps);  % Total time span of the data
+r = rank(operator.A);
 
-X_eval_pred_projected = zeros(r, size(X_eval, 2));
-for i = 1:prediction.n_steps
-    X_eval_pred_projected(:, i) = exp(omega * t(i)) .* X_eval_projected(:, i);
+X_eval_pred_projected = zeros(r, length(t));
+for i = 1:length(t)
+    X_eval_pred_projected(:, i) = exp(omega * t(i))*b;
 end
 
 % Reconstruct predicted states using DMD modes
-X_pred = Phi * X_eval_pred_projected;
-
-
+X_pred = operator.Phi * X_eval_pred_projected;
 
 
 

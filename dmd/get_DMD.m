@@ -1,7 +1,6 @@
-function A_tilde = get_DMD(X1,X2)
+function [A_tilde,Phi] = get_DMD(X1,X2)
 % Load your data matrix X (each column represents a snapshot of the system)
 
-u0 = X1(:, 1);
 % Assuming X is already loaded with appropriate data
 dt = 0.1;
 % Perform Dynamic Mode Decomposition (DMD)
@@ -17,23 +16,12 @@ V_r = V(:, 1:r);
 A_tilde = U_r' * X2 * V_r / E_r;
 
 % Compute the DMD modes
-[eigenvectors, D] = eig(A_tilde);
-lambda = diag(D);       % eigen value
-omega = log(lambda)/dt; % log of eigen value
+[eigenvectors, ~] = eig(A_tilde);
 
-Phi = X2 * V_r * E_r^(-1) * eigenvectors;
 
-% STEP 5: reconstruct the signal
-b = pinv(Phi)*u0;  % pseudo-inverse initial conditions
-t = 11;
-u_modes = zeros(r,length(t));  % DMD reconstruction for every time point
-for i = 1:length(t)
-    u_modes(:,i) =(b.*exp(omega*(t(i))));
-end
-% Construct the Koopman operator
-DMD = Phi * u_modes;
+Phi = X2 * V_r /E_r * eigenvectors;
 
-% Now you have the finite-dimensional approximation for the Koopman operator in K
+
 
    
 end
