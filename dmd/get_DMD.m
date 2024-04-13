@@ -1,12 +1,12 @@
-function [A_tilde,Phi] = get_DMD(X1,X2)
+function [A_tilde,Phi] = get_DMD(X1,X2,r)
 % Load your data matrix X (each column represents a snapshot of the system)
 
 % Assuming X is already loaded with appropriate data
-dt = 0.1;
+
 % Perform Dynamic Mode Decomposition (DMD)
 [U, E, V] = svd(X1, 'econ');
 
-r = 10;
+
 U_r = U(:, 1:r);
 E_r = E(1:r, 1:r);
 V_r = V(:, 1:r);
@@ -19,9 +19,7 @@ A_tilde = U_r' * X2 * V_r / E_r;
 [eigenvectors, ~] = eig(A_tilde);
 
 
-Phi = X2 * V_r /E_r * eigenvectors;
+Phi = X2 * V_r *E_r^(-1) * eigenvectors;
 
-
-
-   
+ 
 end

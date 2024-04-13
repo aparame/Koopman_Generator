@@ -10,7 +10,7 @@ function X_pred = eval_prediction(X_eval,operator,prediction)
 
 
 % Project evaluation data onto DMD modes (Higher space)
-b = operator.Phi\ X_eval(:,1);
+b = pinv(operator.Phi)*X_eval(:,1);
 size(b)
 
 % Evolve modal coefficients forward in time using DMD eigenvalues
@@ -25,7 +25,7 @@ end
 
 % Reconstruct predicted states using DMD modes
 X_pred = operator.Phi * X_eval_pred_projected;
-
+X_pred(:,1) = X_eval(:,1);
 
 
 end
