@@ -44,7 +44,7 @@ dynamics_fn = @lorenz_system; % point to lorenz dynamics
 n_traj = 100;
 dt = 0.01;
 u = @(t) 1;
-tspan = 0:dt:5;  % Adjusted to start from 0
+tspan = 0:dt:10;  % Adjusted to start from 0
 options = odeset('RelTol',1e-12,'AbsTol',1e-12*ones(1,3));
 data_table = [];
 U = u(tspan);
@@ -85,7 +85,7 @@ if(EDMD_flag)
     switch basis.type
         case 'monomials'
             % specifiy degree of monomial sbelow
-            basis.deg = 1;
+            basis.deg = 15;
         case 'rbf'
             % specifiy kernel width of rbfs
             basis.gamma = 0.001;

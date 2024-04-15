@@ -19,19 +19,19 @@ end
 Z1_aug = [Z1;U1];
 
 
-% Perform Dynamic Mode Decomposition (DMD)
-[U1, E1, V1] = svd(Z1_aug, 'econ');
-[U11, E11, V11] = svd(Z1, 'econ');
+% % Perform Dynamic Mode Decomposition (DMD)
+% [U1, E1, V1] = svd(Z1_aug, 'econ');
+% [U11, E11, V11] = svd(Z1, 'econ');
 
 
 
 % STEP 2: low-rank subspace matrix
 %         (similarity transform, least-square fit matrix, low-rank subspace matrix)
-A_edmd_aug = Z2 * V1 * inv(E1) * U1;
+A_edmd_aug = Z2*pinv(Z1);
 
 
 
-C = X1 * V11 * inv(E11) * U11;
+C = X1*pinv(Z1);
 
 
 A = A_edmd_aug(:,1:height(Z1));
