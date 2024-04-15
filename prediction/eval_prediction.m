@@ -16,9 +16,9 @@ size(b)
 % Evolve modal coefficients forward in time using DMD eigenvalues
 omega = log(diag(operator.D)) / prediction.dt;
 t = linspace(0,prediction.n_steps * prediction.dt,prediction.n_steps);  % Total time span of the data
-r = rank(operator.A);
 
-X_eval_pred_projected = zeros(r, length(t));
+
+X_eval_pred_projected = zeros(operator.r, length(t));
 for i = 1:length(t)
     X_eval_pred_projected(:, i) = exp(omega * t(i))*b;
 end

@@ -1,4 +1,4 @@
-function Psi = RBF_gaussian_basis(x, centers, gamma)
+function Psi = custom_basis(x)
 %  [Psi, DPsi] = GaussianRBF_basis(deg, dim) returns a gaussian RBF function and its derivative
 %   There is not a 1 included in Psi, only the linear and higher order terms
 %   Centers = matrix of center points (size = (dim of x, K))
@@ -10,12 +10,6 @@ function Psi = RBF_gaussian_basis(x, centers, gamma)
 Psi = [];
 G = [];
 
-for i=1:size(centers,1)
-    r_squared  = norm(x-centers(i,:))^2;
-    g = exp(-gamma^2 * r_squared);
-    G = [G; g];
-end
-
-Psi = [x;G];
+Psi = [x(1),x(2),x(3),x(1)*x(2),x(1)*x(3)]';
 
 end
