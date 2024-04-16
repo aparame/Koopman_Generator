@@ -49,7 +49,7 @@ options = odeset('RelTol',1e-12,'AbsTol',1e-12*ones(1,3));
 data_table = [];
 U = u(tspan);
 for i = 1:n_traj
-    x0 = randi(10,3,1);
+    x0 = randi(5,3,1);
     [~, data] = ode45(@(t,x) lorenz_system(t, x, u(t)), tspan, x0, options);
     Xbar = data';   %[Xj;U] = Xbar 4x1000
     data_table = [data_table Xbar];
