@@ -16,29 +16,29 @@ dynamics_fn = @lorenz_system; % point to lorenz dynamics
 % set to EDMD_flag = true for EDMD.
 
 
-% %% Load training dataset and visualize
-% % load the csv file for pendulum training
-% dt = 0.01;
-% x0 = [0; 1; 20];
-% xf = [0;0;0];
-% u = @(t) sin(t);
-% tspan = 0:dt:50;  % Adjusted to start from 0
-% options = odeset('RelTol',1e-12,'AbsTol',1e-12*ones(1,3));
-% [t, data] = ode45(@(t,x) lorenz_system(t, x, u(t)), tspan, x0, options);  % Removed unnecessary input u
+%% Load training dataset and visualize
+% load the csv file for pendulum training
+dt = 0.01;
+x0 = [0; 1; 20];
+xf = [0;0;0];
+u = @(t) sin(t);
+tspan = 0:dt:50;  % Adjusted to start from 0
+options = odeset('RelTol',1e-12,'AbsTol',1e-12*ones(1,3));
+[t, data] = ode45(@(t,x) lorenz_system(t, x, u(t)), tspan, x0, options);  % Removed unnecessary input u
 
 
-% %% Plot zero/step control input
-% hold on
-% plot3(data(:,1), data(:,2), data(:,3));
-% plot3(x0(1),x0(2),x0(3), 'ro', 'MarkerSize', 20);
-% plot3(xf(1),xf(2),xf(3), 'ro', 'MarkerSize', 20);
-% xlabel('x');
-% ylabel('y');
-% zlabel('z');
-% title('Lorenz Attractor');
-% view(3);
-% grid on;
-% hold off;
+%% Plot zero/step control input
+hold on
+plot3(data(:,1), data(:,2), data(:,3));
+plot3(x0(1),x0(2),x0(3), 'ro', 'MarkerSize', 20);
+plot3(xf(1),xf(2),xf(3), 'ro', 'MarkerSize', 20);
+xlabel('x');
+ylabel('y');
+zlabel('z');
+title('Lorenz Attractor');
+view(3);
+grid on;
+hold off;
 %% %%%%%%%%%%% Visualize the training dataset %%%%%%%%%%%%%%%%%% %%
 % complete code to plot phase portraits of training data
 n_traj = 100;
@@ -49,7 +49,7 @@ options = odeset('RelTol',1e-12,'AbsTol',1e-12*ones(1,3));
 data_table = [];
 U = u(tspan);
 for i = 1:n_traj
-    x0 = randi(20,3,1);
+    x0 = randi(10,3,1);
     [~, data] = ode45(@(t,x) lorenz_system(t, x, u(t)), tspan, x0, options);
     Xbar = data';   %[Xj;U] = Xbar 4x1000
     data_table = [data_table Xbar];
@@ -85,10 +85,13 @@ if(EDMD_flag)
     switch basis.type
         case 'monomials'
             % specifiy degree of monomial sbelow
-            basis.deg = 15;
+            basis.deg = 7;
+        case 'custom'
+            % % specifiy degree of monomial sbelow
+            % basis.deg = 3;
         case 'rbf'
             % specifiy kernel width of rbfs
-            basis.gamma = 0.001;
+            basis.gamma = 0.01;
         otherwise
             disp('Please specify type of basis')
     end
@@ -143,7 +146,7 @@ hold off;
 %% evaluate operator for n timesteps prediction
 % Use the following parameters for validation
 
-prediction.n_steps = 40; % num timesteps to predict
+prediction.n_steps = 500; % num timesteps to predict
 prediction.dt = 0.1;
 prediction.show_plot = true;
 prediction.n = 4;
@@ -155,7 +158,7 @@ tspan = 0:dt:10;  % Adjusted to start from 0
 options = odeset('RelTol',1e-12,'AbsTol',1e-12*ones(1,3));
 X_eval = [];
 for i = 1:prediction.n_steps
-    x0_eval = randi(20,3,1);
+    x0_eval = randi(10,3,1);
     [~, data_eval] = ode45(@(t,x) lorenz_system(t, x, u(t)), tspan, x0_eval, options);  % Removed unnecessary input u
     Xbar_eval = data_eval';   %[Xj;U] = Xbar 4x1000
     X_eval = [X_eval Xbar];       % Xbar_eval = [data';U];   %[Xj;U] = Xbar 4x1000_eval];
@@ -163,17 +166,26 @@ end
 
 %% Predict data using DMD/EDMD modes
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% X_pred = eval_prediction(data_table,operator,prediction);
-X_pred = eval_EDMD(X_eval,U1,basis,operator,prediction);
+
+
+if(EDMD_flag)
+    X_pred = eval_EDMD(X_eval,U1,basis,operator,prediction);
+else
+    X_pred = eval_prediction(data_table,operator,prediction);
+end
+
 %% evaluate the avg rmse and % error across for prediction
 X_true = data_table(:,1:prediction.n_steps);
 RMSE = rmse(X_pred, X_true, prediction);
+fprintf('RMSE Error is: %f\n', RMSE.rmse)
+
+%% Solving with Ricatti solution for higher dimension states %%
 
 
-%% Solving with MPC control for higher dimension states %%
-
-
-Q = eye(size(A));
-R = 1*eye(size(B));
-[X,K,L] = idare(operator.A,operator.B,Q,R,[],[]);
-X_control = operator.Phi*X;
+Q = eye(size(operator.A));
+R = 1;
+P_X = [0;0;0];
+P_Z = get_basis(P_X,basis);
+[K,S,P] = lqr(operator.A,operator.B,Q,R);
+sys1 = ss(operator.A-operator.B*K,B,operator.C,[]);
+step(sys1)
