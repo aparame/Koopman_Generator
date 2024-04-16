@@ -16,29 +16,29 @@ dynamics_fn = @lorenz_system; % point to lorenz dynamics
 % set to EDMD_flag = true for EDMD.
 
 
-%% Load training dataset and visualize
-% load the csv file for pendulum training
-dt = 0.01;
-x0 = [0; 1; 20];
-xf = [0;0;0];
-u = @(t) sin(t);
-tspan = 0:dt:50;  % Adjusted to start from 0
-options = odeset('RelTol',1e-12,'AbsTol',1e-12*ones(1,3));
-[t, data] = ode45(@(t,x) lorenz_system(t, x, u(t)), tspan, x0, options);  % Removed unnecessary input u
-
-
-%% Plot zero/step control input
-hold on
-plot3(data(:,1), data(:,2), data(:,3));
-plot3(x0(1),x0(2),x0(3), 'ro', 'MarkerSize', 20);
-plot3(xf(1),xf(2),xf(3), 'ro', 'MarkerSize', 20);
-xlabel('x');
-ylabel('y');
-zlabel('z');
-title('Lorenz Attractor');
-view(3);
-grid on;
-hold off;
+% %% Load training dataset and visualize
+% % load the csv file for pendulum training
+% dt = 0.01;
+% x0 = [0; 1; 20];
+% xf = [0;0;0];
+% u = @(t) sin(t);
+% tspan = 0:dt:50;  % Adjusted to start from 0
+% options = odeset('RelTol',1e-12,'AbsTol',1e-12*ones(1,3));
+% [t, data] = ode45(@(t,x) lorenz_system(t, x, u(t)), tspan, x0, options);  % Removed unnecessary input u
+% 
+% 
+% %% Plot zero/step control input
+% hold on
+% plot3(data(:,1), data(:,2), data(:,3));
+% plot3(x0(1),x0(2),x0(3), 'ro', 'MarkerSize', 20);
+% plot3(xf(1),xf(2),xf(3), 'ro', 'MarkerSize', 20);
+% xlabel('x');
+% ylabel('y');
+% zlabel('z');
+% title('Lorenz Attractor');
+% view(3);
+% grid on;
+% hold off;
 %% %%%%%%%%%%% Visualize the training dataset %%%%%%%%%%%%%%%%%% %%
 % complete code to plot phase portraits of training data
 n_traj = 100;
