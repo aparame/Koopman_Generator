@@ -21,10 +21,10 @@ for i = 1:length(t)
     Z_pred = [Z_pred,z];
 end
 X_pred = operator.C*Z_pred;
+figure(2)
 hold on
-p1 = plot3(X_pred(1,:),X_pred(2,:),X_pred(3,:),'DisplayName','X_{pred}');
-p2 = plot3(X_eval(1,1:length(t)),X_eval(2,1:length(t)),X_eval(3,1:length(t)),'DisplayName','X_{eval}');
-view(3)
+p1 = plot(X_pred(1,:),X_pred(2,:),'DisplayName','X_{pred}');
+p2 = plot(X_eval(1,1:length(t)),X_eval(2,1:length(t)),'DisplayName','X_{eval}');
 legend([p1,p2])
 hold off
 

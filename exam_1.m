@@ -9,7 +9,7 @@ addpath dynamics dmd edmd training prediction
 
 %% Problem setup
 
-dynamics_fn = @lorenz_system; % point to lorenz dynamics
+dynamics_fn = @dynamics_duffing; % point to lorenz dynamics
 
 % operator approximation method
 % set to EDMD_flag = false for DMD.
@@ -41,16 +41,16 @@ dynamics_fn = @lorenz_system; % point to lorenz dynamics
 % hold off;
 %% %%%%%%%%%%% Visualize the training dataset %%%%%%%%%%%%%%%%%% %%
 % complete code to plot phase portraits of training data
-n_traj = 100;
-dt = 0.01;
+n_traj = 500;
+dt = 0.1;
 u = @(t) 1;
-tspan = 0:dt:10;  % Adjusted to start from 0
-options = odeset('RelTol',1e-12,'AbsTol',1e-12*ones(1,3));
+tspan = 0:dt:5;  % Adjusted to start from 0
+options = odeset('RelTol',1e-12,'AbsTol',1e-12*ones(1,2));
 data_table = [];
 U = u(tspan);
 for i = 1:n_traj
-    x0 = randi(5,3,1);
-    [~, data] = ode45(@(t,x) lorenz_system(t, x, u(t)), tspan, x0, options);
+    x0 = randi(5,2,1);
+    [~, data] = ode45(@(t,x) dynamics_duffing(t, x, u(t)), tspan, x0, options);
     Xbar = data';   %[Xj;U] = Xbar 4x1000
     data_table = [data_table Xbar];
 end
@@ -75,7 +75,7 @@ if(EDMD_flag)
 
     % get Koopman operator using EDMD
     % define basis setup
-    basis.dim = 3; % system dimension
+    basis.dim = 2; % system dimension
 
     %%%%%%%%%%%%% Setup basis properties for EDMD %%%%%%%%%%%%
     % complete code1
@@ -91,7 +91,7 @@ if(EDMD_flag)
             % basis.deg = 3;
         case 'rbf'
             % specifiy kernel width of rbfs
-            basis.gamma = 0.01;
+            basis.gamma = 0.0001;
         otherwise
             disp('Please specify type of basis')
     end
@@ -125,19 +125,19 @@ end
 %%%%%%%%% Plot eigenvlaues of A in a unit circle %%%%%%%%%%%%%%%%
 % complete code to plot discrete time eigenvalues of A
 
-% Plot the eigenvalues in the complex plane (unit circle)
-figure;
-hold on;
-plot(real(D), imag(D), 'bo'); % Plot eigenvalues as blue circles
-theta = linspace(0, 2*pi, 100);
-plot(cos(theta), sin(theta), 'r--'); % Plot unit circle in red dashed line
-xlabel('Real Part');
-ylabel('Imaginary Part');
-title('Eigenvalues of Koopman Operator (DMD)');
-legend('Eigenvalues', 'Unit Circle');
-axis equal;
-grid on;
-hold off;
+% % Plot the eigenvalues in the complex plane (unit circle)
+% figure;
+% hold on;
+% plot(real(D), imag(D), 'bo'); % Plot eigenvalues as blue circles
+% theta = linspace(0, 2*pi, 100);
+% plot(cos(theta), sin(theta), 'r--'); % Plot unit circle in red dashed line
+% xlabel('Real Part');
+% ylabel('Imaginary Part');
+% title('Eigenvalues of Koopman Operator (DMD)');
+% legend('Eigenvalues', 'Unit Circle');
+% axis equal;
+% grid on;
+% hold off;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% evaluate operator for n timesteps prediction
@@ -149,17 +149,17 @@ hold off;
 prediction.n_steps = 500; % num timesteps to predict
 prediction.dt = 0.1;
 prediction.show_plot = true;
-prediction.n = 4;
-prediction.n_traj = 10;
+prediction.n = 2;
+prediction.n_traj = 2;
 
 
 % u = @(t) sin(t);
-tspan = 0:dt:10;  % Adjusted to start from 0
-options = odeset('RelTol',1e-12,'AbsTol',1e-12*ones(1,3));
+tspan = 0:dt:5;  % Adjusted to start from 0
+options = odeset('RelTol',1e-12,'AbsTol',1e-12*ones(1,2));
 X_eval = [];
 for i = 1:prediction.n_steps
-    x0_eval = randi(10,3,1);
-    [~, data_eval] = ode45(@(t,x) lorenz_system(t, x, u(t)), tspan, x0_eval, options);  % Removed unnecessary input u
+    x0_eval = randi(10,2,1);
+    [~, data_eval] = ode45(@(t,x) dynamics_duffing(t, x, u(t)), tspan, x0_eval, options);  % Removed unnecessary input u
     Xbar_eval = data_eval';   %[Xj;U] = Xbar 4x1000
     X_eval = [X_eval Xbar];       % Xbar_eval = [data';U];   %[Xj;U] = Xbar 4x1000_eval];
 end
@@ -182,10 +182,10 @@ fprintf('RMSE Error is: %f\n', RMSE.rmse)
 %% Solving with Ricatti solution for higher dimension states %%
 
 
-Q = eye(size(operator.A));
-R = 1;
-P_X = [0;0;0];
-P_Z = get_basis(P_X,basis);
-[K,S,P] = lqr(operator.A,operator.B,Q,R);
-sys1 = ss(operator.A-operator.B*K,B,operator.C,[]);
-step(sys1)
+% Q = eye(size(operator.A));
+% R = 1;
+% P_X = [0;0];
+% P_Z = get_basis(P_X,basis);
+% [K,S,P] = lqr(operator.A,operator.B,Q,R);
+% sys1 = ss(operator.A-operator.B*K,B,operator.C,[]);
+% step(sys1)
